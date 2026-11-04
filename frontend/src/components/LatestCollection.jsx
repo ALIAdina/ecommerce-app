@@ -11,7 +11,7 @@ const LatestCollection = () => {
   return (
     <div className='my-10'>
         <div className='text-center py-8 text-3xl'>
-            <Title text1={'LATEST '} text2={'COLLECTIONS'}/>
+            <Title text1={'LATESTT '} text2={'COLLECTIONS'}/>
             <p className='w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600'>Lorem Ipsum is simply dummy text of printing and typesyting industry.Lorem Ipsum has been the.</p>
         </div>
       {/*  Rendring product  */}
