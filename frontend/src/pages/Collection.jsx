@@ -10,7 +10,8 @@ const Collection = () => {
     const [showFilter,setShowFilter]=useState(false);
     const [filterProduct,setFilterProduct]=useState([]);
     const[categoryy,setCategoryy]=useState([]);
-    const[subCategory,setSubCategory]=useState([])
+    const[subCategory,setSubCategory]=useState([]);
+    const[sortType,setSortType]=useState("relevant");
 
     
         const toggleCategory = (e) => {
@@ -57,7 +58,22 @@ const Collection = () => {
             setFilterProduct(productsCopy);
           }
     
+          const sortProduct = ()=> {
+            let fpCopy = filterProduct.slice();
+            switch(sortType)
+            {
+              case 'low-hight':
+                setFilterProduct(fpCopy.sort((a,b)=>(a.price - b.price)));
+                break;
+              case 'hight-low':
+                setFilterProduct(fpCopy.sort((a,b)=>(b.price - a.price)));
+                break;
+              default:
+                  applyFilter();
+                  break;
+            }
 
+          }
 
           useEffect(() => {
             console.log("Catégories sélectionnées :", categoryy,"sub ct",subCategory);
@@ -68,6 +84,11 @@ const Collection = () => {
 
         
     useEffect(()=>{setFilterProduct(products)},[]);
+
+    useEffect(() => {
+      console.log("Nouvelle liste de produits :", filterProduct);
+    }, [filterProduct]);
+    useEffect(()=>{sortProduct()},[sortType])
   return (
     
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
@@ -116,15 +137,15 @@ const Collection = () => {
             <div className='flex justify-between text-base sm:text-2xl mb-4'>
                 <Title text1={'ALL  '} text2={'COLLECTIONS'}/>
                 {/* Product sort */}
-                <select className='border-2 border-gray-300 text-sm px-2'>
+                <select onChange={(e)=>{setSortType(e.target.value)}} className='border-2 border-gray-300 text-sm px-2'>
                     <option value="relevant">Sort by: relavent</option>
-                    <option value="low-hight">Sort by: Lo to Hight</option>
+                    <option value="low-hight">Sort by: Low to Hight</option>
                     <option value="hight-low">Sort by: High to low</option>
                 </select>
             
             </div>
             {/* map products */}
-            <div className='grid grid-cols-2 md:grid-cols-4  lg:grid-col-4 gap-4 gap-y-6'>
+            <div className='grid grid-cols-2 md:grid-cols-4  lg:grid-cols-4 gap-4 gap-y-6'>
                 {
                 filterProduct.map((item,index)=>(<ProductItem key={index} name={item.name} image={item.image} price={item.price}/>)
 
