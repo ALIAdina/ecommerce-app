@@ -3,15 +3,23 @@ import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
+import Fuse from 'fuse.js';
 
 
 const Collection = () => {
-    const {products}=useContext(ShopContext);
+    const {products,search,showSearch}=useContext(ShopContext);
     const [showFilter,setShowFilter]=useState(false);
     const [filterProduct,setFilterProduct]=useState([]);
     const[categoryy,setCategoryy]=useState([]);
     const[subCategory,setSubCategory]=useState([]);
     const[sortType,setSortType]=useState("relevant");
+    const fuse = new Fuse(products, {
+      keys: ['name'],
+      threshold: 0.4,
+      includeScore: true,
+      ignoreLocation: true,
+      minMatchCharLength: 2
+  });
 
     
         const toggleCategory = (e) => {
@@ -40,6 +48,13 @@ const Collection = () => {
             //     //productsCopy=productsCopy(item=>category(item.category));
             //     //productsCopy = productsCopy(item => category(item.category))
             // }
+            if(showSearch && search)
+            {
+              const result=fuse.search(search.trim())
+              productsCopy=result.map(item=>item.item);
+
+             // productsCopy = productsCopy.filter(item=>item.name.toLowerCase().includes(search.toLowerCase()))
+            }
             if (categoryy.length > 0) {
                 productsCopy = productsCopy.filter(item => 
                   categoryy.includes(item.category)
@@ -54,11 +69,24 @@ const Collection = () => {
                   //item.category == category.
                 );
               }
+              switch(sortType)
+            {
+              case 'low-hight':
+                productsCopy.sort((a,b)=>(a.price - b.price));
+                break;
+              case 'hight-low':
+                productsCopy.sort((a,b)=>(b.price - a.price));
+                break;
+              default:
+                  
+                  break;
+            }
+
             
             setFilterProduct(productsCopy);
           }
     
-          const sortProduct = ()=> {
+        /*  const sortProduct = ()=> {
             let fpCopy = filterProduct.slice();
             switch(sortType)
             {
@@ -73,22 +101,22 @@ const Collection = () => {
                   break;
             }
 
-          }
+          }*/
 
           useEffect(() => {
             console.log("Catégories sélectionnées :", categoryy,"sub ct",subCategory);
             applyFilter();
             console.log("product sélectionnées :", filterProduct.slice());
            
-          }, [categoryy,subCategory]);
+          }, [categoryy,subCategory,sortType,search,showSearch]);
 
         
-    useEffect(()=>{setFilterProduct(products)},[]);
+   //  useEffect(()=>{setFilterProduct(products)},[]);
 
     useEffect(() => {
       console.log("Nouvelle liste de produits :", filterProduct);
     }, [filterProduct]);
-    useEffect(()=>{sortProduct()},[sortType])
+    //useEffect(()=>{sortProduct()},[sortType])
   return (
     
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
@@ -145,7 +173,7 @@ const Collection = () => {
             
             </div>
             {/* map products */}
-            <div className='grid grid-cols-2 md:grid-cols-4  lg:grid-cols-4 gap-4 gap-y-6'>
+            <div className='grid grid-cols-2 md:grid-cols-4  lg:grid-col-4 gap-4 gap-y-6'>
                 {
                 filterProduct.map((item,index)=>(<ProductItem key={index} name={item.name} image={item.image} price={item.price}/>)
 
